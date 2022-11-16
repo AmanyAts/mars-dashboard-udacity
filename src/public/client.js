@@ -1,13 +1,14 @@
+
 let store = Immutable.Map({
     user: Immutable.Map({ name: 'Student' }),
     apod: '',
-    rovers: Immutable.List(['curiosity', 'opportunity', 'spirit']),
+   rovers: Immutable.List([]),
     selectedRover: false,
     
 })
-
 // add our markup to the page
 const root = document.getElementById('root')
+
 
 const updateStore = (store, newState) => {
     store = Object.assign(store, newState)
@@ -15,25 +16,44 @@ const updateStore = (store, newState) => {
 }
 
 const render = async (root, state) => {
-    root.innerHTML = App(state)
+    const response = await fetch(`http://localhost:3000/rovers`)
+
+    let roversArray= await response.json()
+let roverName = roversArray.rovers.map(i=> {return i.name}) //hof
+    root.innerHTML = App(state,roverName)
 }
 
 // create content
-const App = (state) => {
+//app is HOF it return another function
+const App =  (state,roverName) => {
     let { rovers, apod } = state
-   //  listOfRovers()
+    
+
+    const newState = store.set('rovers', roverName);
+    
+    // updates the old state 
+    updateStore(store, newState)
+
+
+return listOfRovers(state)
+
+   
+   
+
+}// app
+
+const listOfRovers =  (state) =>{
+
     if (state.get('selectedRover')==false)  {
         return (`
         
         <header>Mars Dashboard</header>
         <main>
             ${Array.from(state.get('rovers')).map(x=>{
-                console.log(x)
              return `<br><button name="${x}" class="button" onclick="handleClick(event)">${x}</button>`
             })
            
         }
-
             </section>
         </main>
         <footer></footer>
@@ -44,20 +64,21 @@ const App = (state) => {
         <header>Mars Dashboard</header>
         <main>
             ${Array.from(state.get('rovers')).map(x=>{
-                console.log(x)
              return `<br><button name="${x}" class="button" onclick="handleClick(event)">${x}</button>`
             })
            
         }
 <div>${DisplayImages(state)}</div>
-
             </section>
         </main>
         <footer></footer>
       
         `)
     }
+   
 }
+
+
 
 // listening for load event because page should load before any JS is called
 window.addEventListener('load', () => {
@@ -66,8 +87,7 @@ window.addEventListener('load', () => {
 
 //handle click button to get the rover name that clicked by user
 const handleClick = event => {
-    console.log('handle clickkkkkkk')
-    console.log(event.target.name)
+
    // set name of the button clicked to a  variable
     let roverName= event.target.name
     //check for the rovername in store
@@ -86,7 +106,7 @@ const handleClick = event => {
 const getRoverData = async (roverName, state) => {
    let { currentRover } = state
    // get data from the API
-   const response = await fetch(`http://localhost:3000//rovers/${roverName}`) // get data or Response from the promise returned by fetch()
+   const response = await fetch(`http://localhost:3000/rovers/${roverName}`) // get data or Response from the promise returned by fetch()
    currentRover = await response.json() // get data from the promise returned by .json()
   
    const newState = store.set('selectedRover', currentRover);
@@ -103,8 +123,8 @@ const DisplayImages= (state)=>{
     console.log('dis')
     // return `<h1- class="id">${state.get('currentRover')['photos'][0].id}</h1>`
   console.log(state.get('selectedRover'))
-return state.get('selectedRover')['photos'].map(x=>
-    `
+return state.get('selectedRover')['latest_photos'].map(x=>{
+return(    `
     <div class="responsive">
     <div class="gallery">
     <a target="_blank">
@@ -115,7 +135,8 @@ return state.get('selectedRover')['photos'].map(x=>
     </div>
     </div>
   
-    `
+    `)
+}
 
 ).slice(0, 50).join("")
 }

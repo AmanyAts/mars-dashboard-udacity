@@ -1,4 +1,3 @@
-
 let store = Immutable.Map({
     user: Immutable.Map({ name: 'Student' }),
     apod: '',
@@ -6,6 +5,21 @@ let store = Immutable.Map({
     selectedRover: false,
     
 })
+async function renderMenue(){
+
+    const response = await fetch(`http://localhost:3000/rovers`)
+
+  return await response.json()
+}
+
+renderMenue().then(x=>{
+    let roversName = x.rovers.map(i=> {return i.name}) 
+    const newState = store.set('rovers', roversName);
+    
+    // updates the old state 
+    updateStore(store, newState)
+})
+//hof
 // add our markup to the page
 const root = document.getElementById('root')
 
@@ -16,23 +30,16 @@ const updateStore = (store, newState) => {
 }
 
 const render = async (root, state) => {
-    const response = await fetch(`http://localhost:3000/rovers`)
 
-    let roversArray= await response.json()
-let roverName = roversArray.rovers.map(i=> {return i.name}) //hof
-    root.innerHTML = App(state,roverName)
+    root.innerHTML = App(state)
 }
 
 // create content
 //app is HOF it return another function
-const App =  (state,roverName) => {
+const App =  (state) => {
     let { rovers, apod } = state
-    
 
-    const newState = store.set('rovers', roverName);
     
-    // updates the old state 
-    updateStore(store, newState)
 
 
 return listOfRovers(state)
@@ -46,9 +53,14 @@ const listOfRovers =  (state) =>{
 
     if (state.get('selectedRover')==false)  {
         return (`
-        
-        <header>Mars Dashboard</header>
-        <main>
+      
+        <header id="box">
+ 
+
+       <h6 class="glow">        <img src="./assets/astronaut.png" width="50" height="50"> Mars Dashboard </h6>
+ 
+        </header>
+        <main >
             ${Array.from(state.get('rovers')).map(x=>{
              return `<br><button name="${x}" class="button" onclick="handleClick(event)">${x}</button>`
             })
@@ -57,6 +69,7 @@ const listOfRovers =  (state) =>{
             </section>
         </main>
         <footer></footer>
+     
         `)
     } else {
         // check if "currentRover" has a value and render images
@@ -120,9 +133,7 @@ const getRoverData = async (roverName, state) => {
 
 const DisplayImages= (state)=>{
 
-    console.log('dis')
     // return `<h1- class="id">${state.get('currentRover')['photos'][0].id}</h1>`
-  console.log(state.get('selectedRover'))
 return state.get('selectedRover')['latest_photos'].map(x=>{
 return(    `
     <div class="responsive">

@@ -28,7 +28,6 @@ app.get('/apod', async (req, res) => {
 // Get rover by name parameter
 app.get('/rovers/:name', async (req, res) => {
     try {
-        console.log('server')
         let images = await fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers/${req.params.name}/latest_photos?api_key=${process.env.API_KEY}`)
             .then(res => res.json())
         res.send(images); 
@@ -40,7 +39,6 @@ app.get('/rovers/:name', async (req, res) => {
 // Get rovers list
 app.get('/rovers', async (req, res) => {
     try {
-        console.log('server')
         let images = await fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers?api_key=${process.env.API_KEY}`)
             .then(res => res.json())
         res.send(images); 

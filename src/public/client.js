@@ -109,7 +109,7 @@ const handleClick = event => {
        getRoverData(roverName, store);
     }
     else {
-        console.log(`ups!!! is not included`) 
+        console.log(`no rover name`) 
     } 
 } 
 
@@ -141,7 +141,7 @@ return(    `
     <a target="_blank">
     <img src="${x.img_src}" alt="${x.id}" height="400">
   </a>
-      <div class="desc">Landing Date: ${x.rover.landing_date} <br> name: ${x.rover.name}<br> launch_date: ${x.rover.launch_date} <br> status: ${x.rover.status}</div>
+      <div class="desc">Landing Date: ${x.rover.landing_date} <br> name: ${x.rover.name}<br> launch_date: ${x.rover.launch_date} <br> status: ${x.rover.status} <br> the date the photo was taken: ${x.earth_date}</div>
 
     </div>
     </div>
